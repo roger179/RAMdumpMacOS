@@ -1,0 +1,27 @@
+import subprocess
+
+def run_command(command):
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+# Passo 1: Coletar a Imagem de Memória
+memdump_path = "/path/to/save/memdump.raw"
+command = f"sudo ./osxpmem -o {memdump_path}"
+stdout, stderr = run_command(command)
+print("Memory dump collected:", stdout.decode())
+
+# Passo 2: Detectar Perfil do Sistema Operacional
+command = f"volatility -f {memdump_path} imageinfo"
+stdout, stderr = run_command(command)
+print("Image info:", stdout.decode())
+
+# Passo 3: Listar Processos
+command = f"volatility -f {memdump_path} --profile=MacOSX_10.15.7_19H2x64 pslist"
+stdout, stderr = run_command(command)
+print("Process list:", stdout.decode())
+
+# Passo 4: Listar Conexões de Rede
+command = f"volatility -f {memdump_path} --profile=MacOSX_10.15.7_19H2x64 netscan"
+stdout, stderr = run_command(command)
+print("Network connections:", stdout.decode())
